@@ -40,7 +40,7 @@ local function NewDialogueEvent(ped, coords, radius, options, event)
     local index = #Peds + 1
     local zone = CircleZone:Create(coords, radius, {
         name = prefix .. index,
-        debugPoly = true
+        debugPoly = false
     })
     Peds[index] = {
         zone = zone,
