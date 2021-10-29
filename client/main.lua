@@ -12,7 +12,7 @@ local diaPromise = nil
 ---@param options {table}: Options for the NPC dialogue
 ---@param callback {function}: Callback function will be triggered when an option is complete with p0 being the selection
 ---@return void
-local function NewDialogue(ped, coords, radius, options, callback)
+local function NewDialogueCallback(ped, coords, radius, options, callback)
     local index = #Peds + 1
     local zone = CircleZone:Create(coords, radius, {
         name = prefix .. index,
@@ -24,6 +24,24 @@ local function NewDialogue(ped, coords, radius, options, callback)
         coords = coords,
         entity = nil,
         cb = callback,
+        options = options
+    }
+
+    AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
+end
+
+local function NewDialogueEvent(ped, coords, radius, options, event)
+    local index = #Peds + 1
+    local zone = CircleZone:Create(coords, radius, {
+        name = prefix .. index,
+        debugPoly = true
+    })
+    Peds[index] = {
+        zone = zone,
+        model = ped,
+        coords = coords,
+        entity = nil,
+        event = event,
         options = options
     }
 
@@ -57,7 +75,8 @@ local function NewDialogueSync(ped, coords, radius, options)
     return Citizen.Await(diaPromise)
 end
 
-exports('NewDialogue', NewDialogue)
+exports('NewDialogueCallback', NewDialogueCallback)
+exports('NewDialogueEvent', NewDialogueEvent)
 exports('NewDialogueSync', NewDialogueSync)
 
 CreateThread(function()
@@ -174,6 +193,8 @@ RegisterNUICallback('select', function(data, cb)
 
     if Peds[interactingWith].cb ~= nil then
         Peds[interactingWith].cb(selection)
+    elseif Peds[interactingWith].event ~= nil then
+        TriggerEvent(Peds[interactingWith].event, selection)
     elseif diaPromise ~= nil then
         diaPromise:resolve(selection)
         diaPromise = nil
