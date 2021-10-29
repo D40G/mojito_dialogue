@@ -30,6 +30,13 @@ local function NewDialogue(ped, coords, radius, options, callback)
     AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
 end
 
+---Creates a new NPC interaction synchronously
+---@param ped {number}: Hash of the ped model
+---@param coords {vec3}: Coordinates to spawn the ped
+---@param radius {number}: Radius at which the ped will be created
+---@param options {table}: Options for the NPC dialogue
+---@param callback {function}: Callback function will be triggered when an option is complete with p0 being the selection
+---@return selection {string}: Synchronously returns the selection as a string
 local function NewDialogueSync(ped, coords, radius, options)
     local index = #Peds + 1
     local zone = CircleZone:Create(coords, radius, {
@@ -128,7 +135,6 @@ function HandleTalk()
     local offsetCoords = GetOffsetFromEntityInWorldCoords(ply, 1.0, 0.0, 0.6) -- Put camera over the player's shoulder
     local currentRot = GetGameplayCamRot()
     currentCam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", offsetCoords.x, offsetCoords.y, offsetCoords.z, currentRot.x, currentRot.y, currentRot.z, 60.00, false, 0)
-    SetCamCoord(offsetCoords.x, offsetCoords.y, offsetCoords.z)
     SetCamActive(currentCam, true)
     RenderScriptCams(1, true, 500, true, true)
     PointCamAtEntity(currentCam, Ped.entity, 1.0, 0.0, 0.6, true) -- Angle the camera at the target entity
