@@ -3,7 +3,6 @@ local Peds = {}
 local inside = false
 local interactingWith = nil
 local currentCam = nil
-local diaPromise = nil
 
 ---Creates a new NPC interaction
 ---@param ped {number}: Hash of the ped model
@@ -55,36 +54,8 @@ local function NewDialogueEvent(ped, coords, radius, options, event)
     AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
 end
 
----Creates a new NPC interaction synchronously
----@param ped {number}: Hash of the ped model
----@param coords {vec3}: Coordinates to spawn the ped
----@param radius {number}: Radius at which the ped will be created
----@param options {table}: Options for the NPC dialogue
----@param callback {function}: Callback function will be triggered when an option is complete with p0 being the selection
----@return selection {string}: Synchronously returns the selection as a string
-local function NewDialogueSync(ped, coords, radius, options)
-    local index = #Peds + 1
-    local zone = CircleZone:Create(coords, radius, {
-        name = prefix .. index,
-        debugPoly = false
-    })
-    Peds[index] = {
-        zone = zone,
-        model = ped,
-        coords = coords,
-        entity = nil,
-        options = options
-    }
-
-    AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
-
-    diaPromise = promise.new()
-    return Citizen.Await(diaPromise)
-end
-
 exports('NewDialogueCallback', NewDialogueCallback)
 exports('NewDialogueEvent', NewDialogueEvent)
-exports('NewDialogueSync', NewDialogueSync)
 
 CreateThread(function()
     while true do
@@ -164,6 +135,7 @@ function HandleTalk()
     SetCamActive(currentCam, true)
     RenderScriptCams(1, true, 500, true, true)
     PointCamAtEntity(currentCam, Ped.entity, 1.0, 0.0, 0.6, true) -- Angle the camera at the target entity
+    PlayFacialAnim(Ped.entity, "mic_chatter", "mp_facial")
 
     SendNUIMessage({
         type = "newDialogue",
@@ -179,6 +151,7 @@ local function ExitDialogue()
     if DoesEntityExist(Ped.entity) then
         FreezeEntityPosition(Ped.entity, false)
         ClearPedTasks(Ped.entity)
+        PlayFacialAnim(Ped.entity, "mood_normal_1", "facials@gen_male@base")
     end
 
     FreezeEntityPosition(ply, false)
@@ -202,9 +175,6 @@ RegisterNUICallback('select', function(data, cb)
         Peds[interactingWith].cb(selection)
     elseif Peds[interactingWith].event ~= nil then
         TriggerEvent(Peds[interactingWith].event, selection)
-    elseif diaPromise ~= nil then
-        diaPromise:resolve(selection)
-        diaPromise = nil
     end
 
     ExitDialogue()
