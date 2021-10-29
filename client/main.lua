@@ -30,6 +30,13 @@ local function NewDialogueCallback(ped, coords, radius, options, callback)
     AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
 end
 
+--- Creates a new NPC interaction
+---@param ped {number}: Hash of the ped model
+---@param coords {vec3}: Coordinates to spawn the ped
+---@param radius {number}: Radius at which the ped will be created
+---@param options {table}: Options for the NPC dialogue
+---@param event {string}: Client event will be triggered when an option is complete with p0 being the selection
+---@return void
 local function NewDialogueEvent(ped, coords, radius, options, event)
     local index = #Peds + 1
     local zone = CircleZone:Create(coords, radius, {
