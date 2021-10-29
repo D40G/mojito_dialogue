@@ -2,6 +2,7 @@
 Simple to use NPC interaction / dialogue system to take a user's input. NPC spawning is optimised and handled by PolyZones.
 
 ### Code Example
+Callback:
 ```lua
 exports['mojito_dialogue']:NewDialogue(`a_m_y_skater_02`, vec3(-727.74, -143.54, 36.36), 20.0, {
     title = "Would you like to start a mission",
@@ -17,8 +18,19 @@ exports['mojito_dialogue']:NewDialogue(`a_m_y_skater_02`, vec3(-727.74, -143.54,
     end
 end)
 ```
-
 The result is returned as a callback function with argument 0 being the selection value in string form.
+
+Sync:
+```lua
+local selection = exports['mojito_dialogue']:NewDialogueSync(`a_m_y_skater_02`, vec3(-727.74, -143.54, 36.36), 20.0, {
+    title = "Would you like to start a mission",
+    items = {
+        {text = "Yes", value="yes"},
+        {text = "No", value="no"}
+    }
+})
+```
+The result is returned inline from a promise in string form.
 
 <p align="center">
     <a href="https://streamable.com/v4ekkm"> Video Preview </a>

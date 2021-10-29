@@ -3,7 +3,7 @@ local Peds = {}
 local inside = false
 local interactingWith = nil
 local currentCam = nil
-
+local diaPromise = nil
 
 ---Creates a new NPC interaction
 ---@param ped {number}: Hash of the ped model
@@ -30,7 +30,28 @@ local function NewDialogue(ped, coords, radius, options, callback)
     AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
 end
 
+local function NewDialogueSync(ped, coords, radius, options)
+    local index = #Peds + 1
+    local zone = CircleZone:Create(coords, radius, {
+        name = prefix .. index,
+        debugPoly = true
+    })
+    Peds[index] = {
+        zone = zone,
+        model = ped,
+        coords = coords,
+        entity = nil,
+        options = options
+    }
+
+    AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
+
+    diaPromise = promise.new()
+    return Citizen.Await(diaPromise)
+end
+
 exports('NewDialogue', NewDialogue)
+exports('NewDialogueSync', NewDialogueSync)
 
 CreateThread(function()
     while true do
@@ -144,7 +165,13 @@ RegisterKeyMapping("exitdialogue", "Exit current dialogue interaction", "keyboar
 
 RegisterNUICallback('select', function(data, cb)
     local selection = data.option
-    Peds[interactingWith].cb(selection)
+
+    if Peds[interactingWith].cb ~= nil then
+        Peds[interactingWith].cb(selection)
+    elseif diaPromise ~= nil then
+        diaPromise:resolve(selection)
+        diaPromise = nil
+    end
 
     ExitDialogue()
     cb({})
