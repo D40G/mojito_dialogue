@@ -16,7 +16,7 @@ local function NewDialogue(ped, coords, radius, options, callback)
     local index = #Peds + 1
     local zone = CircleZone:Create(coords, radius, {
         name = prefix .. index,
-        debugPoly = true
+        debugPoly = false
     })
     Peds[index] = {
         zone = zone,
@@ -41,7 +41,7 @@ local function NewDialogueSync(ped, coords, radius, options)
     local index = #Peds + 1
     local zone = CircleZone:Create(coords, radius, {
         name = prefix .. index,
-        debugPoly = true
+        debugPoly = false
     })
     Peds[index] = {
         zone = zone,
