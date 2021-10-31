@@ -12,15 +12,16 @@ local currentCam = nil
 ---@param callback {function}: Callback function will be triggered when an option is complete with p0 being the selection
 ---@return void
 local function NewDialogueCallback(ped, coords, radius, options, callback)
+    local _coords = type(coords) == 'table' and vector3(coords.x, coords.y, coords.z) or coords
     local index = #Peds + 1
-    local zone = CircleZone:Create(coords, radius, {
+    local zone = CircleZone:Create(_coords, radius, {
         name = prefix .. index,
         debugPoly = false
     })
     Peds[index] = {
         zone = zone,
         model = ped,
-        coords = coords,
+        coords = _coords,
         entity = nil,
         cb = callback,
         options = options
@@ -37,15 +38,16 @@ end
 ---@param event {string}: Client event will be triggered when an option is complete with p0 being the selection
 ---@return void
 local function NewDialogueEvent(ped, coords, radius, options, event)
+    local _coords = type(coords) == 'table' and vector3(coords.x, coords.y, coords.z) or coords
     local index = #Peds + 1
-    local zone = CircleZone:Create(coords, radius, {
+    local zone = CircleZone:Create(_coords, radius, {
         name = prefix .. index,
         debugPoly = false
     })
     Peds[index] = {
         zone = zone,
         model = ped,
-        coords = coords,
+        coords = _coords,
         entity = nil,
         event = event,
         options = options
