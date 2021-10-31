@@ -146,6 +146,8 @@ function HandleTalk()
 end
 
 local function ExitDialogue()
+    if not interactingWith then return end
+
     local Ped = Peds[interactingWith]
     local ply = PlayerPedId()
     if DoesEntityExist(Ped.entity) then
