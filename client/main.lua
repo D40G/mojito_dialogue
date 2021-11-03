@@ -12,7 +12,7 @@ local currentCam = nil
 ---@param callback {function}: Callback function will be triggered when an option is complete with p0 being the selection
 ---@return void
 local function NewDialogueCallback(ped, coords, radius, options, callback)
-    local _coords = type(coords) == 'table' and vector3(coords.x, coords.y, coords.z) or coords
+    local _coords = type(coords) == 'table' and vector4(coords.x, coords.y, coords.z, coords.h or 0.0) or coords
     local index = #Peds + 1
     local zone = CircleZone:Create(_coords, radius, {
         name = prefix .. index,
@@ -38,7 +38,7 @@ end
 ---@param event {string}: Client event will be triggered when an option is complete with p0 being the selection
 ---@return void
 local function NewDialogueEvent(ped, coords, radius, options, event)
-    local _coords = type(coords) == 'table' and vector3(coords.x, coords.y, coords.z) or coords
+    local _coords = type(coords) == 'table' and vector4(coords.x, coords.y, coords.z, coords.h or 0.0) or coords
     local index = #Peds + 1
     local zone = CircleZone:Create(_coords, radius, {
         name = prefix .. index,
@@ -84,6 +84,7 @@ CreateThread(function()
 
                     local PedCoords = Ped.coords
                     Ped.entity = CreatePed(1, Ped.model, PedCoords.x, PedCoords.y, PedCoords.z, 0.0, false, true)
+                    SetEntityHeading(Ped.entity, PedCoords.w)
                     SetBlockingOfNonTemporaryEvents(Ped.entity, true)
                     SetPedDiesWhenInjured(Ped.entity, false)
                     SetEntityInvincible(Ped.entity, true)
