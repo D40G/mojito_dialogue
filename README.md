@@ -6,7 +6,7 @@ There are two ways to access data from an NPC interaction as follows:
 
 With Callback:
 ```lua
-exports['mojito_dialogue']:NewDialogueCallback(`a_m_y_skater_02`, vec3(-727.74, -143.54, 36.36), 20.0, {
+exports['mojito_dialogue']:NewDialogueCallback(`a_m_y_skater_02`, vec4(-727.74, -143.54, 36.36, 0.00), 20.0, {
     title = "Would you like to start a mission",
     items = {
         {text = "Yes", value="yes"},
@@ -24,7 +24,7 @@ The result is returned as a callback function with argument 0 being the selectio
 
 With Event:
 ```lua
-exports['mojito_dialogue']:NewDialogueEvent(`a_m_y_skater_02`, vec3(-727.74, -143.54, 36.36), 20.0, {
+exports['mojito_dialogue']:NewDialogueEvent(`a_m_y_skater_02`, vec4(-727.74, -143.54, 36.36, 0.00), 20.0, {
     title = "Would you like to start a mission",
     items = {
         {text = "Yes", value="yes"},
