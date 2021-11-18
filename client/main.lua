@@ -52,8 +52,6 @@ local function NewDialogueEvent(ped, coords, radius, options, event)
         event = event,
         options = options
     }
-
-    AddEventHandler(prefix .. index .. 'ped_event', HandleTalk)
 end
 
 exports('NewDialogueCallback', NewDialogueCallback)
@@ -69,7 +67,6 @@ CreateThread(function()
             local Ped = Peds[i]
             if Ped.zone:isPointInside(coords) then
                 inside = true
-                interactingWith = i
 
                 if not DoesEntityExist(Ped.entity) then
                     if not IsModelInCdimage(Ped.model) then 
@@ -83,19 +80,19 @@ CreateThread(function()
                     end
 
                     local PedCoords = Ped.coords
-                    Ped.entity = CreatePed(1, Ped.model, PedCoords.x, PedCoords.y, PedCoords.z, 0.0, false, true)
-                    SetEntityHeading(Ped.entity, PedCoords.w)
+                    Ped.entity = CreatePed(1, Ped.model, PedCoords.x, PedCoords.y, PedCoords.z, PedCoords.w, false, true)
                     SetBlockingOfNonTemporaryEvents(Ped.entity, true)
                     SetPedDiesWhenInjured(Ped.entity, false)
                     SetEntityInvincible(Ped.entity, true)
 
                     exports['qb-target']:AddEntityZone(prefix .. i,  Ped.entity, {
-                        name = prefix .. i
+                        name = prefix .. i,
+                        debugPoly = true
                     }, {
                         distance = 2.0,
                         options = {
                             {
-                                event = prefix .. i .. 'ped_event',
+                                action = HandleTalk,
                                 icon = 'fas fa-comments',
                                 label = 'Talk to NPC',
                             }
@@ -121,8 +118,18 @@ CreateThread(function()
     end
 end)
 
-function HandleTalk()
-    local Ped = Peds[interactingWith]
+function FindPed()
+    local entity = interactingWith
+    for i = 1, #Peds do
+        if Peds[i].entity == entity then
+            return Peds[i]
+        end
+    end
+end
+
+function HandleTalk(entity)
+    interactingWith = entity
+    local Ped = FindPed()
     local ply = PlayerPedId()
     
     TaskTurnPedToFaceEntity(Ped.entity, ply, 0.0)
@@ -151,7 +158,7 @@ end
 local function ExitDialogue()
     if not interactingWith then return end
 
-    local Ped = Peds[interactingWith]
+    local Ped = FindPed()
     local ply = PlayerPedId()
     if DoesEntityExist(Ped.entity) then
         FreezeEntityPosition(Ped.entity, false)
@@ -168,6 +175,8 @@ local function ExitDialogue()
     currentCam = nil
 
     SetNuiFocus(false, false)
+
+    interactingWith = nil
 end
 
 RegisterCommand("exitdialogue", ExitDialogue)
@@ -176,10 +185,12 @@ RegisterKeyMapping("exitdialogue", "Exit current dialogue interaction", "keyboar
 RegisterNUICallback('select', function(data, cb)
     local selection = data.option
 
-    if Peds[interactingWith].cb ~= nil then
-        Peds[interactingWith].cb(selection)
-    elseif Peds[interactingWith].event ~= nil then
-        TriggerEvent(Peds[interactingWith].event, selection)
+    local Ped = FindPed()
+
+    if Ped.cb ~= nil then
+        Ped.cb(selection)
+    elseif Ped.event ~= nil then
+        TriggerEvent(Ped.event, selection)
     end
 
     ExitDialogue()
