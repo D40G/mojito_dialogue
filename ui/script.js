@@ -30,7 +30,7 @@ const fetchNui = async (callback, payload) => {
 
 window.addEventListener('message', (e) => {
     const data = e.data;
-    if (data.type = 'newDialogue') {
+    if (data.type === 'newDialogue') {
         container.style.visibility = 'visible';
         options.innerHTML = '';
         const title = data.title;
@@ -49,6 +49,7 @@ window.addEventListener('message', (e) => {
 
             div.addEventListener('click', onClick)
         })
-        
-    } 
+    } else if(data.type === "close") {
+        container.style.visibility = 'hidden';
+    }
 })

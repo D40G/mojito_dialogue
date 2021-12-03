@@ -87,7 +87,7 @@ CreateThread(function()
 
                     exports['qb-target']:AddEntityZone(prefix .. i,  Ped.entity, {
                         name = prefix .. i,
-                        debugPoly = true
+                        debugPoly = false
                     }, {
                         distance = 2.0,
                         options = {
@@ -153,6 +153,7 @@ function HandleTalk(entity)
         items = Ped.options.items
     })
     SetNuiFocus(true, true)
+    SetNuiFocusKeepInput(true)
 end
 
 local function ExitDialogue()
@@ -174,6 +175,9 @@ local function ExitDialogue()
     DestroyCam(currentCam)
     currentCam = nil
 
+    SendNUIMessage({
+        type = "close"
+    })
     SetNuiFocus(false, false)
 
     interactingWith = nil
