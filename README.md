@@ -12,11 +12,17 @@ exports['mojito_dialogue']:NewDialogueCallback(`a_m_y_skater_02`, vec4(-727.74, 
         {text = "Yes", value="yes"},
         {text = "No", value="no"}
     }
-}, function(selection)
+}, function(selection, next, exit)
     if selection == "yes" then
-     QBCore.Functions.Notify("You picked yes", "success")
+        next({
+            title = "Next title",
+            items = {
+                {text = "Yes", value="yes"},
+                {text = "No", value="no"}
+            }
+        })
     else
-     QBCore.Functions.Notify("You picked no", "error")
+        exit()
     end
 end)
 ```
@@ -32,8 +38,18 @@ exports['mojito_dialogue']:NewDialogueEvent(`a_m_y_skater_02`, vec4(-727.74, -14
     }
 }, "myscript:client:onInteract")
 
-AddEventHandler("myscript:client:onInteract", function(selection)
-    print(selection) -- "yes" or "no" 
+AddEventHandler("myscript:client:onInteract", function(selection, next, exit)
+    if selection == "yes" then
+        next({
+            title = "Next title",
+            items = {
+                {text = "Yes", value="yes"},
+                {text = "No", value="no"}
+            }
+        })
+    else
+        exit()
+    end
 end)
 ```
 

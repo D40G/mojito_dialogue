@@ -183,6 +183,14 @@ local function ExitDialogue()
     interactingWith = nil
 end
 
+local function NextDialogue(data)
+    SendNUIMessage({
+        type = "newDialogue",
+        title = data.title,
+        items = data.items
+    })
+end
+
 RegisterCommand("exitdialogue", ExitDialogue)
 RegisterKeyMapping("exitdialogue", "Exit current dialogue interaction", "keyboard", "BACK") -- Default key to exit as backspace
 
@@ -192,11 +200,10 @@ RegisterNUICallback('select', function(data, cb)
     local Ped = FindPed()
 
     if Ped.cb ~= nil then
-        Ped.cb(selection)
+        Ped.cb(selection, NextDialogue, ExitDialogue)
     elseif Ped.event ~= nil then
-        TriggerEvent(Ped.event, selection)
+        TriggerEvent(Ped.event, selection, NextDialogue, ExitDialogue)
     end
 
-    ExitDialogue()
     cb({})
 end)
